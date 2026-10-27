@@ -1206,6 +1206,20 @@ python3 scripts/text_measure.py box "First line" "Second line" --x 96 --y 140 --
 python3 scripts/text_measure.py calibrate projects/example --outline
 ```
 
+## `svg_layout_audit.py`
+
+Audit the geometry *inside* each module — the defects `data-pptx-bounds` cannot see.
+
+```bash
+python3 scripts/svg_layout_audit.py projects/project
+python3 scripts/svg_layout_audit.py projects/project --strict --json /tmp/layout.json
+python3 scripts/svg_layout_audit.py projects/project --margin 72
+```
+
+Checks eight rules over authored page SVG: text covered by a later opaque shape, text colliding with text, text running past or bleeding on its card, a filled block crossing its panel border, a connector crossing a label, a dot sitting on a label, and content leaving the canvas. Errors are occlusion and collision; the rest are warnings. Exit code is `0` clean, `1` on an error, and `1` on any finding with `--strict`.
+
+Run it in the same consolidated repair pass as the quality gate, before `finalize_svg.py`. Rule bodies and tolerances live in [`docs/rules/layout-geometry.md`](../../../../docs/rules/layout-geometry.md); tool details in [`layout-audit.md`](./layout-audit.md).
+
 ## `svg_quality_checker.py`
 
 Validate SVG technical compliance.

@@ -9,6 +9,7 @@ Conventions and style guides for contributors and AI agents working in this repo
 | [`ownership.md`](./ownership.md) | Which role decides what — the plan / execution / Reference tiers, capability before selection, the core volume ceiling, preparation timing |
 | [`rule-owners.md`](./rule-owners.md) | Registry of every cross-file rule: its one owner section and the files that may only point to it |
 | [`code-style.md`](./code-style.md) | Style guide for Python under `skills/ppt-master/scripts/` — file headers, imports, CLI entry points, error handling, no-tests rule |
+| [`layout-geometry.md`](./layout-geometry.md) | Intra-module geometry: text covered by a later shape, text colliding with text, labels running past or bleeding on their card, blocks crossing a panel border, connectors cutting through labels — plus the audit that enforces them |
 | [`language.md`](./language.md) | Language rule for agent-facing Markdown and `docs/` — one language per file, non-English as content but never as a rule, no hard-coded output language |
 
 When adding a new rule file:

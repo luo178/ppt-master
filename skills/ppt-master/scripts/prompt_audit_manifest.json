@@ -2444,6 +2444,10 @@
       {
         "glob": "skills/ppt-master/scripts/docs/native-data.md",
         "reason": "Closed Chart/Table payload grammar for checker/exporter behavior; native-data-interface.md carries the canonical forms, and generation roles open this file only when a payload check fails."
+      },
+      {
+        "glob": "skills/ppt-master/scripts/docs/layout-audit.md",
+        "reason": "Tool documentation for svg_layout_audit.py; read on demand from svg-pipeline.md, never bulk-loaded."
       }
     ]
   }
