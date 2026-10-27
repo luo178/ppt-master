@@ -322,18 +322,33 @@ def _shape_box(tag: str, element: ET.Element) -> _Box | None:
 
 
 def _host_card(text: _Text, shapes: Iterable[_Shape]) -> _Shape | None:
-    """The smallest earlier opaque shape that holds the text's start point."""
+    """The earlier opaque shape that owns the text.
+
+    First choice is the smallest card holding the text centre.  A card whose
+    text has slipped past its bottom edge no longer contains that centre, so
+    fall back to the nearest card that spans the text horizontally and starts
+    above it — otherwise the bleed that matters most would go unreported.
+    """
+    centre_x = (text.box.x0 + text.box.x1) / 2
+    centre_y = (text.box.y0 + text.box.y1) / 2
     host: _Shape | None = None
+    fallback: _Shape | None = None
+    fallback_gap = 0.0
     for shape in shapes:
         if shape.order >= text.order or not shape.opaque:
             continue
-        centre_x = (text.box.x0 + text.box.x1) / 2
-        centre_y = (text.box.y0 + text.box.y1) / 2
-        if not shape.box.contains_point(centre_x, centre_y):
+        if shape.box.contains_point(centre_x, centre_y):
+            if host is None or shape.box.area < host.box.area:
+                host = shape
             continue
-        if host is None or shape.box.area < host.box.area:
-            host = shape
-    return host
+        if not (shape.box.x0 <= centre_x <= shape.box.x1):
+            continue
+        if shape.box.y0 > text.box.y0:
+            continue
+        gap = text.box.y1 - shape.box.y1
+        if 0 < gap <= 60 and (fallback is None or gap < fallback_gap):
+            fallback, fallback_gap = shape, gap
+    return host or fallback
 
 
 def _hides(shape: _Shape, x: float, y: float, after: int, before: int) -> bool:

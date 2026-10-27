@@ -94,6 +94,13 @@ class CardEdgeTests(unittest.TestCase):
         )
         self.assertIn(OVERFLOW, codes(body))
 
+    def test_text_below_its_card_is_reported(self) -> None:
+        body = (
+            '<rect x="100" y="100" width="400" height="100" fill="#F5F5F1"/>'
+            '<text x="120" y="215" font-size="12" fill="#1B2A33">跑出卡片下边框的一行</text>'
+        )
+        self.assertIn(BLEED, codes(body))
+
     def test_text_on_the_card_bottom_edge_is_reported(self) -> None:
         body = (
             '<rect x="100" y="100" width="400" height="60" fill="#F5F5F1"/>'
