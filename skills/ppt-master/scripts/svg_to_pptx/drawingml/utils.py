@@ -3694,6 +3694,12 @@ def _estimate_character_width(ch: str, font_size: float) -> float:
         return font_size * 0.3
     if ch in _FIXED_SPACE_EMS:
         return font_size * _FIXED_SPACE_EMS[ch]
+    # Symbols whose East Asian width is 'A' (ambiguous): circled digits,
+    # arrows, math operators, geometric shapes. CJK fonts render them at
+    # full width; estimating 0.55em under-sizes the box and makes renderers
+    # that ignore wrap="none" (LibreOffice) wrap the line.
+    if 0x2160 <= ord(ch) <= 0x24FF or 0x2190 <= ord(ch) <= 0x2BFF or 0x25A0 <= ord(ch) <= 0x27BF:
+        return font_size
     ch = _base_letter(ch)
     if ch in 'mMwWOQ%':
         return font_size * 0.75
