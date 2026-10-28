@@ -3705,6 +3705,11 @@ def _estimate_character_width(ch: str, font_size: float) -> float:
         return font_size * 0.75
     if ch in 'iIlj!|':
         return font_size * 0.3
+    if 'A' <= ch <= 'Z':
+        # Upper-case Latin advances ~0.68em in UI fonts; classing them with
+        # 0.55em under-sizes short bold term labels enough that renderers
+        # ignoring wrap="none" (LibreOffice) wrap them mid-word.
+        return font_size * 0.68
     if ch.isdigit():
         # digits are tabular (uniform ~0.55em) in most UI fonts, including
         # '1' — classing it with 'il|' under-sizes the box and makes

@@ -124,7 +124,7 @@ class TextMeasureTests(unittest.TestCase):
     def test_unknown_family_keeps_crude_width(self) -> None:
         text = 'The dissemination layer covers the poster you stand next to at a conference session'
         crude = sum(estimate_text_cluster_widths(text, 16))
-        self.assertAlmostEqual(crude, 661.6)
+        self.assertAlmostEqual(crude, 663.68)
         for family in ('Aptos', 'Unlisted Sans', 'Aptos, Arial'):
             with self.subTest(family=family):
                 self.assertEqual(
