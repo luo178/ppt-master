@@ -254,16 +254,17 @@ python3 scripts/image_search.py "offshore wind farm" \
 
 For multiple web rows, `--batch images/image_queries.json` searches them concurrently (modest default, `--concurrency N` / `IMAGE_SEARCH_CONCURRENCY` to tune) instead of one call per row — the web sister of `image_gen.py --manifest`. Schema and status semantics: [`image-searcher.md`](../../references/image-searcher.md) §5.
 
-Providers (Pexels / Pixabay are tried first when keyed; Openverse and Wikimedia are zero-config fallbacks):
+Providers (Pexels / Pixabay / Unsplash are tried first when keyed; Openverse and Wikimedia are zero-config fallbacks):
 
 | Provider | Config | Strength |
 |---|---|---|
 | `pexels` | recommended: `PEXELS_API_KEY` | modern stock photography, people, workplace, lifestyle |
 | `pixabay` | recommended: `PIXABAY_API_KEY` | broad type coverage including photos and illustrations |
+| `unsplash` | recommended: `UNSPLASH_ACCESS_KEY` | high-resolution editorial photography; demo tier caps at 50 requests/hour |
 | `openverse` | zero-config | fallback aggregator: Wikimedia + Flickr + museums + rawpixel |
 | `wikimedia` | zero-config | educational, scientific, geographic, historical |
 
-Default search chain (when `--provider` is unset): configured Pexels, configured Pixabay, Openverse, then Wikimedia. Missing keyed credentials are silently skipped. Keyed providers broaden stock-photo coverage but are optional; zero-config providers remain valid.
+Default search chain (when `--provider` is unset): configured Pexels, configured Pixabay, configured Unsplash, Openverse, then Wikimedia. Missing keyed credentials are silently skipped. Keyed providers broaden stock-photo coverage but are optional; zero-config providers remain valid.
 
 `image_search.py` uses the same `.env` lookup order as `image_gen.py`, so skill installs can keep `PEXELS_API_KEY` / `PIXABAY_API_KEY` in `~/.ppt-master/.env`.
 

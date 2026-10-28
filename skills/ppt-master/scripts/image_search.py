@@ -87,12 +87,13 @@ PROVIDER_MODULES: dict[str, str] = {
     "wikimedia": "image_sources.provider_wikimedia",
     "pexels": "image_sources.provider_pexels",
     "pixabay": "image_sources.provider_pixabay",
+    "unsplash": "image_sources.provider_unsplash",
 }
 
 # Providers that work without configuration. ``image_search.py`` defaults
 # to these so a fresh clone can search immediately.
 ZERO_CONFIG_PROVIDERS: tuple[str, ...] = ("openverse", "wikimedia")
-KEYED_PROVIDERS: tuple[str, ...] = ("pexels", "pixabay")
+KEYED_PROVIDERS: tuple[str, ...] = ("pexels", "pixabay", "unsplash")
 ALL_PROVIDERS: tuple[str, ...] = ZERO_CONFIG_PROVIDERS + KEYED_PROVIDERS
 
 ORIENTATION_CHOICES = ("any", "landscape", "portrait", "square")
@@ -265,7 +266,7 @@ def _warn_weak_required_terms(required_terms: tuple[str, ...]) -> None:
 
 def _load_search_env_file() -> None:
     """Load image-search keys from the shared PPT Master .env locations."""
-    load_prefixed_env_file(("PEXELS_", "PIXABAY_"))
+    load_prefixed_env_file(("PEXELS_", "PIXABAY_", "UNSPLASH_"))
 
 
 # ---------------------------------------------------------------------------
@@ -282,7 +283,24 @@ def _is_keyed_provider_unconfigured(provider_name: str, exc: Exception) -> bool:
     chain can keep going."""
     if provider_name not in KEYED_PROVIDERS:
         return False
-    return "API_KEY" in str(exc)
+    return "API_KEY" in str(exc) or "ACCESS_KEY" in str(exc)
+
+
+def _notify_provider_download(provider_name: str, candidate: object) -> None:
+    """Ping the provider's download counter when it defines one.
+
+    Currently only Unsplash requires it (API guidelines). Failures are
+    swallowed: the asset is already on disk, and a counter ping must never
+    turn a finished download into an error.
+    """
+    if provider_name not in PROVIDER_MODULES:
+        return
+    try:
+        notify = getattr(_load_provider(provider_name), "notify_download", None)
+        if notify is not None:
+            notify(candidate)
+    except Exception:
+        return
 
 
 @dataclass
@@ -1205,6 +1223,7 @@ def search_and_download(
                     min_width=request.min_width,
                     min_height=request.min_height,
                 )
+                _notify_provider_download(provider_name, candidate)
                 return SearchDownloadResult(
                     candidate=candidate,
                     provider_name=provider_name,
@@ -1640,6 +1659,9 @@ def promote_candidate(
                 min_height=min_height,
                 metadata_dimensions=metadata_dimensions,
             )
+        _notify_provider_download(
+            selected_candidate.provider, selected_candidate
+        )
 
         item_args = argparse.Namespace(
             filename=target_filename,
@@ -2610,6 +2632,8 @@ def _default_provider_chain() -> list[str]:
         chain.append("pexels")
     if os.environ.get("PIXABAY_API_KEY"):
         chain.append("pixabay")
+    if os.environ.get("UNSPLASH_ACCESS_KEY"):
+        chain.append("unsplash")
     chain.extend(ZERO_CONFIG_PROVIDERS)
     return chain
 

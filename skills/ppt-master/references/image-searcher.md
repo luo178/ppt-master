@@ -14,7 +14,7 @@ Every provider-sourced image lands in one of two tiers; everything else is rejec
 
 | Tier | Licenses | On-slide attribution |
 |---|---|---|
-| `no-attribution` | CC0, Public Domain, Pexels License, Pixabay Content License | None |
+| `no-attribution` | CC0, Public Domain, Pexels License, Pixabay Content License, Unsplash License | None |
 | `attribution-required` | CC BY, CC BY-SA, publisher terms that require a source credit | Inline credit `<text>` on the slide (the CC token only for a CC licence) |
 | `manual` | Directly selected URL or adopted-page image, license unverified | None — rights and any credit are the user's responsibility |
 
@@ -24,7 +24,7 @@ Every provider-sourced image lands in one of two tiers; everything else is rejec
 
 ## 2. Search Strategy
 
-Quality first across all allowed tiers — never prefer CC0 over a better CC BY image; the manifest's `license_tier` lets Executor add credit only when needed. `--strict-no-attribution` (CC0 / PD / Pexels / Pixabay only) is opt-in for decks that cannot carry any on-slide credit.
+Quality first across all allowed tiers — never prefer CC0 over a better CC BY image; the manifest's `license_tier` lets Executor add credit only when needed. `--strict-no-attribution` (CC0 / PD / Pexels / Pixabay / Unsplash only) is opt-in for decks that cannot carry any on-slide credit.
 
 ```
 Multimodal Generate: explicit query variants × provider chain + allowed licenses
@@ -42,10 +42,11 @@ Non-visual / standalone best-only: explicit query variants × provider chain
 |---|---|---|
 | Pexels | `PEXELS_API_KEY` (free, [signup](https://www.pexels.com/api/)) | modern stock photography, people, workplace, lifestyle |
 | Pixabay | `PIXABAY_API_KEY` (free, [signup](https://pixabay.com/api/docs/)) | broad coverage including illustrations; its API serves at most a 1280 px long edge, so prefer Wikimedia or Pexels for full-bleed heroes |
+| Unsplash | `UNSPLASH_ACCESS_KEY` (free, [signup](https://unsplash.com/developers)) | high-resolution editorial-grade photography; the demo tier allows 50 requests/hour, so keep queries tight |
 | Openverse | zero-config | fallback aggregator: Wikimedia + Flickr + museums + rawpixel |
 | Wikimedia Commons | zero-config | educational, scientific, geographic, historical; pin `provider: wikimedia` for murals, manuscripts, artworks, and museum objects, which stock providers tag with tourist snapshots |
 
-Default chain: `pexels` → `pixabay` (each when keyed) → `openverse` → `wikimedia`; a keyed provider without a key is silently skipped. Configure Pexels or Pixabay when stock coverage serves the brief; their absence is never a failure.
+Default chain: `pexels` → `pixabay` → `unsplash` (each when keyed) → `openverse` → `wikimedia`; a keyed provider without a key is silently skipped. Configure Pexels, Pixabay, or Unsplash when stock coverage serves the brief; their absence is never a failure.
 
 ---
 
